@@ -1,0 +1,3470 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Wiraa
+  description: Global freelance platform
+basePath: /api/v1
+components:
+  schemas:
+    Portfolio:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the post
+        title:
+          type: string
+          description: The title of the post
+        body:
+          type: string
+          description: The body of the post
+        user_id:
+          type: integer
+          description: The ID of the user who posted the post
+        category:
+          type: string
+          description: The category of the post
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time when the post was created
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time when the post was last updated
+        images:
+          type: array
+          items:
+            type: string
+          description: An array of image URLs attached to the post
+      required:
+        - id
+        - title
+        - body
+        - user_id
+        - category
+        - created_at
+        - updated_at
+    Question:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        favorite:
+          type: boolean
+        accepted_answer_id:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    Answer:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the answer
+        body:
+          type: string
+          description: The body of the answer
+        accepted:
+          type: boolean
+          description: Indicates whether the answer has been accepted as the solution to the question
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time when the answer was created
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time when the answer was last updated
+        user_id:
+          type: integer
+          description: The ID of the user who posted the answer
+      required:
+        - id
+        - body
+        - created_at
+        - updated_at
+        - user_id
+    Person:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        website:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        budget:
+          type: integer
+        favorite:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    Profile:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        website:
+          type: string
+        bio:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        project_id:
+          type: integer
+        description:
+          type: string
+        budget:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    ProfileUpdate:
+      type: object
+      properties:
+        full_name:
+          type: string
+          description: The full name of the user
+        username:
+          type: string
+          description: The username of the user
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+        password:
+          type: string
+          description: The new password for the user
+        bio:
+          type: string
+          description: A short bio of the user
+        location:
+          type: string
+          description: The location of the user
+        website:
+          type: string
+          format: uri
+          description: The website URL of the user
+        image:
+          type: string
+          format: uri
+          description: The profile image URL of the user
+      required:
+        - full_name
+        - username
+        - email
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+        sender_id:
+          type: integer
+        receiver_id:
+          type: integer
+        body:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    SearchQuery:
+      type: object
+      properties:
+        query:
+          type: string
+        filters:
+          type: object
+    MonthlyDistribution:
+      type: object
+      properties:
+        month:
+          type: string
+        count:
+          type: integer
+    NewPortfolio:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        budget:
+          type: number
+      required:
+        - name
+        - description
+        - startDate
+        - endDate
+        - budget
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Gender:
+      in: query
+      name: gender
+      schema:
+        type: string
+        enum:
+          - Male
+          - Female
+        description: The gender to filter profiles by
+      example: Male
+
+    Page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        description: The page number to retrieve
+      example: 1
+
+    PerPage:
+      in: query
+      name: per_page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 10
+        description: The number of results to retrieve per page
+      example: 10
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Unauthorized
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Forbidden
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Not Found
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Internal Server Error
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Bad Request
+tags:
+  - name: Authorization
+    description: Endpoints for Authorization
+  - name: Admin
+    description: Endpoints for Admin
+  - name: Affiliate
+    description: Endpoints for Affiliate
+  - name: Category
+    description: Endpoints for Category
+  - name: Learn
+    description: Endpoints for Learn
+  - name: Order
+    description: Endpoints for managing orders
+  - name: Payout
+    description: Endpoints for managing payouts
+  - name: People
+    description: Endpoints for managing people
+  - name: Plan
+    description: Endpoints for managing plan
+  - name: Portfolio
+    description: Endpoints for managing user portfolios
+  - name: Post
+    description: Endpoints for managing user posts
+  - name: Profile
+    description: Endpoints for managing user profiles
+  - name: Project
+    description: Endpoints for managing projects
+  - name: Question
+    description: Endpoints for managing projects
+  - name: Message
+    description: Endpoints for managing messages
+  - name: Search
+    description: Endpoints for search
+paths:
+  /spec:
+    get:
+      tags:
+        - Specification
+      responses:
+        200:
+          description: Return the API specification
+  /auth/login:
+    post:
+      tags:
+        - Authorization
+      summary: Returns Authorization Token
+      description: >-
+        Authorizes default users with username and password set as root to use
+        the endpoints
+      responses:
+        "200":
+          description: Authorization token
+          examples:
+            application/json:
+              data: token
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: email
+          in: formData
+          type: string
+        - required: true
+          name: password
+          in: formData
+          type: string
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /auth/signup:
+    post:
+      tags:
+        - Authorization
+      summary: Register user data
+      description: >-
+        Register
+      responses:
+        "201":
+          description: Registerd successfully
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: firstName
+          in: formData
+          type: string
+        - required: true
+          name: lastName
+          in: formData
+          type: string
+        - required: true
+          name: email
+          in: formData
+          type: string
+        - required: true
+          name: password
+          in: formData
+          type: string
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /auth/verifyUser:
+    post:
+      tags:
+        - Authorization
+      summary: check user email 
+      description: >-
+        check email presence in database
+      responses:
+        "200":
+          description: data exist
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: email
+          in: formData
+          type: string
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /auth/resetPassword:
+    patch:
+      tags:
+        - Authorization
+      summary: email verification check and email existant for password updation
+      description: >-
+        email verification check and email existant for password updation
+      responses:
+        "200":
+          description: update password
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: email
+          in: formData
+          type: string
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /auth/verifyEmail:
+    get:
+      tags:
+        - Authorization
+      summary: verify mail
+      description: verify mail
+      parameters:
+        - in: query
+          name: token
+          type: string
+          description: User's JWT token for email verification.
+          required: true
+      responses:
+        "200":
+          description: OK
+      produces:
+        - application/json
+  /auth/updatePassword:
+    patch:
+      tags:
+        - Authorization
+      summary: update password with query have token
+      description: >-
+        update password with query have token
+      responses:
+        "200":
+          description: update password
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: token
+          in: query
+          type: string
+          description: User's JWT token for password updation.
+        - required: true
+          name: password
+          in: formData
+          type: string
+          description: enter new password.
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /auth/tempForgetPass:
+    patch:
+      tags:
+        - Authorization
+      summary: update password with query have token
+      description: >-
+        update password with query have token
+      responses:
+        "200":
+          description: update password
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: email
+          in: formData
+          type: string
+          description: User's email for password updation.
+        - required: true
+          name: password
+          in: formData
+          type: string
+          description: enter new password.
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /auth/securityTest:
+    get:
+      summary: Get all password
+      tags:
+        - Authorization
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      description: Retrieve a list of all password
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /plan:
+    get:
+      tags:
+        - Plan
+      summary: Get all plans
+      description: Retrieves a list of all plans available for courses.
+      responses:
+        "200":
+          description: OK
+      parameters: []
+      produces:
+        - application/json
+  /plan/user/{id}:
+    get:
+      tags:
+        - Plan
+      summary: Get plan by ID
+      description: Retrieves a plan by its ID.
+      parameters:
+        - in: path
+          name: id
+          description: Plan ID
+          required: true
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+      produces:
+        - application/json
+  /plan/create:
+    post:
+      tags:
+        - Plan
+      summary: Create plan
+      description: Creates a new plan with the specified request body.
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/Plan"
+      parameters:
+        - required: true
+          name: body
+          in: body
+          schema:
+            $ref: "#/definitions/PlanCreate"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+  /plan/update/{id}:
+    put:
+      tags:
+        - Plan
+      summary: Update plan by ID
+      description: Updates a plan by its ID with the specified request body.
+      parameters:
+        - in: path
+          name: id
+          description: Plan ID
+          required: true
+          format: int32
+          type: integer
+        - required: true
+          name: body
+          in: body
+          schema:
+            $ref: "#/definitions/PlanUpdate"
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/Plan"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+  /plan/delete/{id}:
+    delete:
+      tags:
+        - Plan
+      summary: Delete plan by ID
+      description: Deletes a plan by its ID.
+      parameters:
+        - in: path
+          name: id
+          description: Plan ID
+          required: true
+          format: int32
+          type: integer
+      responses:
+        "204":
+          description: No Content
+  /payout:
+    get:
+      tags:
+        - Payout
+      summary: Get all payouts
+      description: Returns a list of all payouts
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Payout"
+      parameters: []
+      produces:
+        - application/json
+    post:
+      tags:
+        - Payout
+      summary: Create a new payout
+      description: Creates a new payout
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/Payout"
+      parameters:
+        - required: true
+          name: body
+          in: body
+          schema:
+            $ref: "#/definitions/PayoutCreate"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+  /payout/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: ID of the payout to retrieve
+        required: true
+        format: int32
+        type: integer
+    get:
+      tags:
+        - Payout
+      summary: Get a payout by ID
+      description: Returns a payout by ID
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/Payout"
+      parameters: []
+      produces:
+        - application/json
+    put:
+      tags:
+        - Payout
+      summary: Update a payout by ID
+      description: Updates a payout by ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the payout to update
+          required: true
+          format: int32
+          type: integer
+        - required: true
+          name: body
+          in: body
+          schema:
+            $ref: "#/definitions/PayoutUpdate"
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/Payout"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+    delete:
+      tags:
+        - Payout
+      summary: Delete a payout by ID
+      description: Deletes a payout by ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the payout to delete
+          required: true
+          format: int32
+          type: integer
+      responses:
+        "204":
+          description: No Content
+
+  /affiliate/all:
+    get:
+      summary: Get all affiliate members
+      tags:
+        - Affiliate
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      description: Retrieve a list of all affiliate members
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /affiliate/visitor/{Id}:
+    get:
+      summary: Get affiliate visitors by affiliate ID
+      tags:
+        - Affiliate
+      description: Retrieve a specific affiliate's visitor by Id
+      parameters:
+        - name: Id
+          in: path
+          description: ID of the affiliate member to retrieve data for
+          required: true
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Successful response
+      produces:
+        - application/json
+  /affiliate/{memberId}:
+    get:
+      summary: Get affiliate member by ID
+      tags:
+        - Affiliate
+      description: Retrieve a specific affiliate member by memberId
+      parameters:
+        - name: memberId
+          in: path
+          description: ID of the affiliate member to retrieve
+          required: true
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Successful response
+  /affiliate/report/{id}:
+    get:
+      summary: Get affiliate member by ID
+      tags:
+        - Affiliate
+      description: Retrieve a specific affiliate member report by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of the affiliate for whom, report to retrieve
+          required: true
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Successful response
+  /affiliate/payout/{id}:
+    get:
+      summary: Get affiliate Payout by ID
+      tags:
+        - Affiliate
+      description: Retrieve a specific affiliate member payout by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of the affiliate for whom, payout to retrieve
+          required: true
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Successful response
+  /affiliate/add:
+    post:
+      summary: Create a new affiliate member
+      tags:
+        - Affiliate
+      description: Create a new affiliate member
+      responses:
+        "201":
+          description: Successful response
+          schema:
+            $ref: "#/definitions/AffiliateMember"
+      parameters:
+        - required: true
+          name: body
+          in: body
+          schema:
+            $ref: "#/definitions/AffiliateMemberCreate"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+  /affiliate/update/{memberId}:
+    put:
+      summary: Update affiliate member by ID
+      tags:
+        - Affiliate
+      description: Update a specific affiliate member by memberId
+      parameters:
+        - name: memberId
+          in: path
+          description: ID of the affiliate member to update
+          required: true
+          format: int64
+          type: integer
+        - required: true
+          name: body
+          in: body
+          schema:
+            $ref: "#/definitions/AffiliateMemberUpdate"
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            $ref: "#/definitions/AffiliateMember"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+  /affiliate/delete/{memberId}:
+    delete:
+      summary: Delete affiliate member by ID
+      tags:
+        - Affiliate
+      description: Delete a specific affiliate member by memberId
+      parameters:
+        - name: memberId
+          in: path
+          description: ID of the affiliate member to delete
+          required: true
+          format: int64
+          type: integer
+      responses:
+        "204":
+          description: Successful response with no content
+
+  /learn/courses:
+    get:
+      summary: Get all courses
+      tags:
+        - Learn
+      description: Retrieve a list of all courses
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Course"
+      parameters: []
+      produces:
+        - application/json
+  /learn/courses/{courseId}:
+    get:
+      summary: Get course by id
+      tags:
+        - Learn
+      description: Retrieve a specific course by courseId
+      parameters:
+        - name: courseId
+          in: path
+          description: ID of the course to retrieve
+          required: true
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            $ref: "#/definitions/Course"
+      produces:
+        - application/json
+  /learn/coursesPlan/{courseId}:
+    get:
+      summary: Get course plan by id
+      tags:
+        - Learn
+      description: Retrieve a specific course Plan by courseId
+      parameters:
+        - name: courseId
+          in: path
+          description: ID of the course to retrieve the plan for
+          required: true
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Successful response
+  /learn/courses/{courseId}/modules:
+    get:
+      summary: Get modules of a course
+      tags:
+        - Learn
+      description: Retrieve modules of a specific course by courseId
+      parameters:
+        - name: courseId
+          in: path
+          description: ID of the course to retrieve modules for
+          required: true
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Successful response
+  /learn/subscription/{id}:
+    get:
+      summary: Get Course Subscription by userId
+      tags:
+        - Learn
+      description: Retrieve Course Subscription detail by userid
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to retrieve subscription for
+          required: true
+          format: int64
+          type: integer
+      responses:
+        "200":
+          description: Successful response
+  /learn/subscriptions:
+    get:
+      summary: Get Course Subscriptions
+      tags:
+        - Learn
+      description: Retrieve Course Subscription details
+      responses:
+        "200":
+          description: Successful response
+  /learn/applycoupon/{code}:
+    get:
+      summary: Get Coupon Code details
+      tags:
+        - Learn
+      description: Retrieve Coupon Code details
+      parameters:
+        - name: code
+          in: path
+          description: Coupon Code to verify
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Successful response
+
+  /people/getAllPeople/{userId}:
+    get:
+      summary: Get all people
+      tags:
+        - People
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /people/peopleById/{userId}:
+    get:
+      summary: Get people by id
+      tags:
+        - People
+        - Search
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: The id to find people by
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /people/category/{id}:
+    get:
+      summary: Get people by category id
+      tags:
+        - People
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The category to filter people by
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /people/subcategory/{id}:
+    get:
+      summary: Get people by sub category id
+      tags:
+        - People
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The sub category to filter people by
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /people/{user_id}/contact:
+    get:
+      summary: Get contact details for a user
+      tags:
+        - People
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: The ID of the user to get contact details for
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /portfolio/count/{user_id}:
+    get:
+      summary: Get the number of portfolios for a given user
+      tags:
+        - Portfolio
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: The ID of the user to retrieve the portfolio
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /portfolio/category/{user_id}:
+    get:
+      summary: Get The portfolios for a given category
+      tags:
+        - Portfolio
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: The Category ID to retrieve the portfolio
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /portfolio/addPortfolio:
+    post:
+      summary: Create a new portfolio
+      tags:
+        - Portfolio
+      parameters:
+        - name: Content-Type
+          in: header
+          type: string
+          required: true
+          default: "multipart/form-data"
+          description: The content type for the request
+        - name: userProfileId
+          in: formData
+          type: integer
+          required: true
+          description: userProfileId
+        - name: description
+          in: formData
+          type: string
+          required: false
+          description: Description of your portfolio
+        - name: files
+          in: formData
+          type: file
+          required: false
+          description: Images to be uploaded
+      responses:
+        '201':
+          description: Portfolio created successfully
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+      consumes:
+       - multipart/form-data
+      produces:
+       - application/json
+  /portfolio/all/{userProfileId}:
+    get:
+      summary: Get all portfolios
+      tags:
+        - Portfolio
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: The ID of the user, user liked portfolio or not
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /portfolio/byId/{userProfileId}:
+    get:
+      summary: Get all portfolios for a given user
+      tags:
+        - Portfolio
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: The ID of the user to retrieve the portfolio
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /portfolio/distribution/{id}:
+    get:
+      summary: Get monthly portfolio distribution
+      tags:
+        - Portfolio
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID of the user to retrieve the portfolio
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+        - in: query
+          name: year
+          type: integer
+          required: true
+          description: The year to retrieve the distribution for
+        - in: query
+          name: month
+          type: integer
+          required: true
+          description: The month to retrieve the distribution for. If not provided, retrieves the distribution for the entire year.
+      responses:
+        "200":
+          description: OK
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /portfolio/gellAllCommentByPortfolioId/{postId}:
+    get:
+      summary: get all comment by PortfolioId
+      tags:
+        - Portfolio
+      parameters:
+        - in: path
+          name: postId
+          type: integer
+          required: true
+          description: get all comment by Portfolio_Id
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /portfolio/addComment:
+    post:
+      tags:
+        - Portfolio
+      summary: Create comment
+      description: >-
+        Create comment
+      responses:
+        "201":
+          description: Comment created successfully
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: false
+          name: postId
+          in: formData
+          type: integer
+        - required: false
+          name: userProfileId
+          in: formData
+          type: integer
+        - required: true
+          name: comment
+          in: formData
+          type: string
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /portfolio/updateComment:
+    patch:
+      tags:
+        - Portfolio
+      summary: update comment
+      description: >-
+        update comment
+      responses:
+        "200":
+          description: Comment update successfully
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: false
+          name: postId
+          in: formData
+          type: integer
+        - required: false
+          name: userProfileId
+          in: formData
+          type: integer
+        - required: false
+          name: postCommentId
+          in: formData
+          type: integer
+        - required: true
+          name: comment
+          in: formData
+          type: string
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /portfolio/deleteComment:
+    delete:
+      tags:
+        - Portfolio
+      summary: delete comment
+      description: >-
+        postOwner as well as commentOwner delete own comment only
+      responses:
+        "200":
+          description: Comment delete successfully
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: false
+          name: loggeduserProfileId
+          in: formData
+          type: integer
+          description: enter logged in userProfileId
+        - required: false
+          name: commenteduserProfileId
+          in: formData
+          type: integer
+          description: enter commenteduserProfileId
+        - required: false
+          name: postId
+          in: formData
+          type: integer
+          description: enter postId
+        - required: false
+          name: postCommentId
+          in: formData
+          type: integer
+          description: enter postCommentId
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /portfolio/addLikeUnlike:
+    patch:
+      tags:
+        - Portfolio
+      summary: add like unlike
+      description: >-
+        add like unlike
+      responses:
+        "201":
+          description: add like unlike
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: false
+          name: postId
+          in: formData
+          type: integer
+        - required: false
+          name: userProfileId
+          in: formData
+          type: integer
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+
+  /question/latest:
+    get:
+      summary: Get latest questions
+      tags:
+        - Question
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /question:
+    get:
+      summary: Get all questions
+      tags:
+        - Question
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /question/distribution/monthly:
+    get:
+      summary: Get monthly question distribution
+      tags:
+        - Question
+      parameters:
+        - in: query
+          name: year
+          type: integer
+          required: true
+          description: The year to retrieve the distribution for
+        - in: query
+          name: month
+          type: integer
+          description: The month to retrieve the distribution for. If not provided, retrieves the distribution for the entire year.
+      responses:
+        "200":
+          description: OK
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /question/favorite/{uid}/{qid}:
+    post:
+      summary: Mark a question as favorite
+      tags:
+        - Question
+      parameters:
+        - in: path
+          name: uid
+          type: integer
+          required: true
+          description: The User ID to mark favorite for
+        - in: path
+          name: qid
+          type: integer
+          required: true
+          description: The ID of the question to mark as favorite
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /question/favorite/{uid}:
+    get:
+      summary: Get favorite questions
+      tags:
+        - Question
+      parameters:
+        - in: path
+          name: uid
+          type: integer
+          required: true
+          description: The User ID to mark  as favorite
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /question/{question_id}/answer:
+    get:
+      summary: Get accepted answer for a question
+      tags:
+        - Question
+      parameters:
+        - in: path
+          name: question_id
+          type: integer
+          required: true
+          description: The ID of the question to get the accepted answer for
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /project:
+    get:
+      summary: Get projects with budget
+      tags:
+        - Project
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+        - in: query
+          name: min_budget
+          type: integer
+          description: The minimum budget for a project
+        - in: query
+          name: max_budget
+          type: integer
+          description: The maximum budget for a project
+        - in: query
+          name: sort
+          type: string
+          description: Sort projects by either "budget" or "deadline". If not provided, sorts by descending creation date.
+        - in: query
+          name: direction
+          type: string
+          description: Sort direction, either "asc" or "desc". Only applies if the "sort" parameter is provided. If not provided, sorts in descending order
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /project/newestAllProject:
+    get:
+      summary: Get all newest project
+      tags:
+        - Project
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      description: Retrieve a list of all newest project
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /project/getAllProject:
+    get:
+      summary: Get all project
+      tags:
+        - Project
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      description: Retrieve a list of all project
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /project/getFavorite/{id}:
+    get:
+      summary: Get favorite projects
+      tags:
+        - Project
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The User ID to get favorites for
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /project/addProjectToFavorite/{uid}/{pid}:
+    post:
+      summary: Mark a project as favorite
+      tags:
+        - Project
+      parameters:
+        - in: path
+          name: uid
+          type: integer
+          required: true
+          description: The User ID to mark  as favorite
+        - in: path
+          name: pid
+          type: integer
+          required: true
+          description: The ID of the project to mark as favorite
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /project/getAllProjectByUserId/{userId}:
+    get:
+      summary: Get all project by userId
+      tags:
+        - Project
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: The ID of the user to get project list
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /project/getProjectDetailByProjectId/{projectId}:
+    get:
+      summary: Get  project detail by projectId
+      tags:
+        - Project
+      parameters:
+        - in: path
+          name: projectId
+          type: integer
+          required: true
+          description: The ID of the project to get project details
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /project/addProject:
+    post:
+      tags:
+        - Project
+      summary: add project
+      description: >-
+        add project
+      responses:
+        "201":
+          description: add project
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: userId
+          in: formData
+          type: integer
+        - required: true
+          name: title
+          in: formData
+          type: string
+        - required: true
+          name: projectDescription
+          in: formData
+          type: string
+        - required: true
+          name: category
+          in: formData
+          type: integer
+        - required: true
+          name: subCategory
+          in: formData
+          type: integer
+        - required: true
+          name: country
+          in: formData
+          type: string
+        - required: true
+          name: mobile
+          in: formData
+          type: string
+        - required: true
+          name: currency
+          in: formData
+          type: string
+        - required: true
+          name: budget
+          in: formData
+          type: string
+        - required: true
+          name: workType
+          in: formData
+          type: string
+        - required: true
+          name: isFeatured
+          in: formData
+          type: boolean
+        - name: serviceMode
+          in: formData
+          type: string
+        - name: city
+          in: formData
+          type: string
+        - name: duration
+          in: formData
+          type: string
+        - name: preferService
+          in: formData
+          type: string
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /project/addInterestToProject:
+    post:
+      tags:
+        - Project
+      summary: addInterest to project
+      description: >-
+        addInterest to project
+      responses:
+        "201":
+          description: you are interested in this project
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: body
+          in: formdata
+          schema:
+            type: object
+            properties:
+              userId:
+                type: integer
+              projectId:
+                type: integer
+              experience:
+                type: string
+              comfortable:
+                type: string
+              immediately:
+                type: string
+              availabality:
+                type: string
+            example:
+              userId: 50001
+              projectId: 10001
+              experience: 1
+              comfortable: I am comfortable
+              immediately: Full-time
+              availabality: I can start immediately
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /project/getExpertiseByUserId/{userId}:
+    get:
+      summary: Get all project list according to your category by userId
+      tags:
+        - Project
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: The ID of the user to get project list according to your category
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /project/getInterestedByUserId/{userId}:
+    get:
+      summary: Get all project list where you show interest by userId
+      tags:
+        - Project
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: The ID of the user to get project list where you show interest
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /project/grouped/monthly:
+    get:
+      summary: Get projects grouped by month
+      tags:
+        - Project
+      parameters:
+        - in: query
+          name: year
+          type: integer
+          required: true
+          description: The year to group projects by
+        - in: query
+          name: month
+          type: integer
+          description: The month to filter projects by
+        - in: query
+          name: id
+          type: integer
+          description: The id to filter projects by
+      responses:
+        "200":
+          description: OK
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /project/messages/{Project_id}:
+    get:
+      summary: Get projects messages
+      tags:
+        - Project
+      parameters:
+        - in: path
+          name: Project_id
+          type: integer
+          description: Project Id to retrieve messages for.
+      responses:
+        "200":
+          description: OK
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /post:
+    get:
+      summary: Get all posts
+      tags:
+        - Post
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /post/category/{id}:
+    get:
+      summary: Get posts by category id
+      tags:
+        - Post
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The category id to filter posts by
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /post/user/{user_id}:
+    get:
+      summary: Get all posts by a user
+      tags:
+        - Post
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: The ID of the user to get posts for
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /post/images:
+    get:
+      summary: Get all posts with images
+      tags:
+        - Post
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /profile/updateProfile/{userId}:
+    patch:
+      summary: Update a user's profile
+      tags:
+        - Profile
+      parameters:
+        - required: true
+          name: userId
+          in: path
+          type: integer
+        - required: false
+          name: fName
+          in: formData
+          type: string
+        - required: false
+          name: lName
+          in: formData
+          type: string
+        - required: false
+          name: files
+          in: formData
+          type: file
+      responses:
+        "200":
+          description: OK
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      consumes:
+       - multipart/form-data
+      produces:
+       - application/json
+  /profile/FreelancerFollowUnfollow/{userProfileId}/{followProfileId}:
+    patch:
+      summary: Follow Unfollow freelancer
+      tags:
+        - Profile
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: The ID of the user to follow
+        - in: path
+          name: followProfileId
+          type: integer
+          required: true
+          description: The ID of the user as follower id
+      responses:
+        "200":
+          description: OK
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /profile/clientMyProfile/{userId}:
+    get:
+      summary: client get all own profile details
+      tags:
+        - Profile
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: The ID of the user to client get all profile details
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /profile/professionalMyProfile/{userId}:
+    get:
+      summary: professional get all own profile details
+      tags:
+        - Profile
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: The ID of the user to professional get all profile details
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /profile/RandomFreelancer:
+    get:
+      summary: Get three random user profiles
+      tags:
+        - Profile
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+
+  /professional/createProfessional:
+    post:
+      tags:
+        - Professional
+      summary: user change profile into preofessional
+      description: >-
+        create professional
+      responses:
+        "201":
+          description: create professional
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: userId
+          in: formData
+          type: integer
+        - required: true
+          name: userProfileId
+          in: formData
+          type: integer
+        - required: true
+          name: mobile
+          in: formData
+          type: string
+        - required: true
+          name: aboutMe
+          in: formData
+          type: string
+        - required: true
+          name: experience
+          in: formData
+          type: string
+        - required: true
+          name: countryId
+          in: formData
+          type: integer
+        - required: true
+          name: cityId
+          in: formData
+          type: integer
+        - required: true
+          name: occupationId
+          in: formData
+          type: integer
+        - required: true
+          name: qualificationName
+          in: formData
+          type: string
+        - required: true
+          name: qualificationId
+          in: formData
+          type: integer
+        - required: true
+          name: categoryId
+          in: formData
+          type: integer
+        - required: false
+          name: subCategoryId
+          in: formData
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        - required: false
+          name: files
+          in: formData
+          type: file
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+
+  /search/portfolio/{id}:
+    get:
+      summary: Search portfolios by category id
+      tags:
+        - Portfolio
+        - Search
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The category to search portfolios by
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /search/people/{id}:
+    get:
+      summary: Search people by category
+      tags:
+        - People
+        - Search
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The category ID to search people by
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /order/allOrders/{userId}:
+    get:
+      summary: Get orders list by userId
+      tags:
+        - Order
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+        - in: path
+          name: userId
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /order/detailById/{order_id}:
+    get:
+      summary: Get order details
+      tags:
+        - Order
+      parameters:
+        - in: path
+          name: order_id
+          type: integer
+          required: true
+          description: The ID of the order to get details for
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /order/orderClose:
+    patch:
+      tags:
+        - Order
+      summary: order close
+      description: >-
+        order close
+      responses:
+        "200":
+          description: order close
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: userId
+          in: formData
+          type: integer
+        - required: true
+          name: orderId
+          in: formData
+          type: integer
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+  /order/answerOrder/{orderId}/{proUserId}:
+    get:
+      summary: Get answer order
+      tags:
+        - Order
+      parameters:
+        - in: path
+          name: orderId
+          type: integer
+          required: true
+          description: The ID of the order to get details for
+        - in: path
+          name: proUserId
+          type: integer
+          required: true
+          description: The ID of the professionalUser to get answer for orders
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /order/interestedProfessional/{orderId}:
+    get:
+      summary: Get interested Professional
+      tags:
+        - Order
+      parameters:
+        - in: path
+          name: orderId
+          type: integer
+          required: true
+          description: The ID of the order to get details for interested Professional
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /messages:
+    get:
+      summary: Get messages with date
+      tags:
+        - Message
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+        - in: query
+          name: date
+          type: string
+          format: date
+          required: true
+          description: The date to retrieve messages for (in YYYY-MM-DD format)
+
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /notification/all/{userProfileId}:
+    get:
+      summary: Get all notification by userProfileId
+      tags:
+        - Notification
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: The ID of the userProfile, fetch all notification respectively userProfileId
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /notification/readNotification/{userProfileId}/{notificationId}:
+    patch:
+      summary: read notification by userProfileId and notificationId
+      tags:
+        - Notification
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: The ID of the userProfile, read notification respectively userProfileId
+        - in: path
+          name: notificationId
+          type: integer
+          required: true
+          description: The ID of the notificationId, read notification respectively userProfileId abd notificationId
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /notification/getUnreadNotifications/{userProfileId}:
+    get:
+      summary: Get all unread notification by userProfileId
+      tags:
+        - Notification
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: The ID of the userProfile, fetch all unread notification respectively userProfileId
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /notification/deleteNotification/{userProfileId}/{notificationId}:
+    delete:
+      summary: delete notification by userProfileId and notificationId
+      tags:
+        - Notification
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: The ID of the userProfile, delete notification respectively userProfileId
+        - in: path
+          name: notificationId
+          type: integer
+          required: true
+          description: The ID of the notificationId, delete notification respectively userProfileId abd notificationId
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /notification/deleteAllNotifications/{userProfileId}:
+    delete:
+      summary: delete all notification by userProfileId
+      tags:
+        - Notification
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: The ID of the userProfile, delete all notification respectively userProfileId
+      responses:
+        "200":
+          description: OK
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /setting/deactivateAccountbyId/{userId}:
+    patch:
+      summary: deactivate account by userId
+      tags:
+        - Setting
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: The ID of the userId to deactivate our account
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"  
+  /setting/createBlockUser/{userProfileId}/{userId}:
+    post:
+      summary: block user
+      tags:
+        - Setting
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: Blockby userProfileId
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: block userId
+      responses:
+        "201":
+          description: User Blocked Successfully
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"  
+  /setting/getBlockedAccountById/{userProfileId}:
+    get:
+      summary: getBlockedAccount by userProfileId
+      tags:
+        - Setting
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: The ID of the userProfileId to getBlockedAccount
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError" 
+  /setting/UnblockUserById/{userProfileId}/{userId}:
+    delete:
+      summary: UnblockUserById by userProfileId and userId
+      tags:
+        - Setting
+      parameters:
+        - in: path
+          name: userProfileId
+          type: integer
+          required: true
+          description: unblock by userProfileId to unblock user 
+        - in: path
+          name: userId
+          type: integer
+          required: true
+          description: unblock userId 
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError" 
+  /setting/updateNumber/{userId}:
+    patch:
+      summary: update mobile number by userId
+      tags:
+        - Setting
+      responses:
+        "200":
+          description: mobile number updated succesfully
+      parameters:
+        - required: true
+          in: path
+          name: userId
+          type: integer
+          description: userId
+        - required: true  
+          in: formData
+          name: number
+          type: string
+          description: enter updated number 
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+
+  /startup/getAllStartup:
+    get:
+      summary: Get all affiliate members
+      tags:
+        - Startup
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      description: Retrieve a list of all affiliate members
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /startup/getStartupById/{startupId}:
+    get:
+      summary: Get order details
+      tags:
+        - Startup
+      parameters:
+        - in: path
+          name: startupId
+          type: integer
+          required: false
+          description: The ID of the startup to get details for
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"      
+  /startup/addStartup:
+    post:
+      tags:
+        - Startup
+      summary: Insert Startup details
+      description: >-
+        Startup detail
+      responses:
+        "201":
+          description: Startup insert successfully
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: true
+          name: startupName
+          in: formData
+          type: string
+        - required: true
+          name: country
+          in: formData
+          type: string
+        - required: true
+          name: email
+          in: formData
+          type: string
+        - required: true
+          name: phoneNo
+          in: formData
+          type: string
+        - required: true
+          name: description
+          in: formData
+          type: string
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+
+  /report/getAllReport:
+    get:
+      summary: Get all reports
+      tags:
+        - Report
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      description: Retrieve a list of all affiliate members
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"  
+  /report/getReportById/{reportId}:
+    get:
+      summary: Get Report details
+      tags:
+        - Report
+      parameters:
+        - in: path
+          name: reportId
+          type: integer
+          required: true
+          description: The ID of the reportId to get details for
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"      
+  /report/createReport:
+    post:
+      tags:
+        - Report
+      summary: update report details
+      description: >-
+        Startup detail
+      responses:
+        "201":
+          description: update report successfully
+          examples:
+            application/json:
+              data: data
+          schema:
+            type: object
+      parameters:
+        - required: false
+          name: userId
+          in: formData
+          type: string
+        - required: true
+          name: currentUrl
+          in: formData
+          type: string
+        - required: true
+          name: previousUrl
+          in: formData
+          type: string
+        - required: true
+          name: feedback
+          in: formData
+          type: string
+        - required: true
+          name: files
+          in: formData
+          type: file
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+
+  /static/getAllCity:
+    get:
+      summary: Get all cities
+      tags:
+        - Static
+      description: Retrieve a list of all Cities
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /static/getAllCountry:
+    get:
+      summary: Get all Countries
+      tags:
+        - Static
+      description: Retrieve a list of all Countries
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /static/getAllCountryISD:
+    get:
+      summary: Get all Countries with Isd code
+      tags:
+        - Static
+      description: Retrieve a list of all Countries With Isd
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /static/getCityByCountryId/{countryId}:
+    get:
+      summary: get city By countryId
+      tags:
+        - Static
+      parameters:
+        - in: path
+          name: countryId
+          type: integer
+          required: true
+          description: The ID of the country to get city
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError" 
+  /static/getAllCategory:
+    get:
+      summary: Get all category
+      tags:
+        - Static
+        - Category
+      description: Retrieve a list of all category
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /static/getAllSubcategory:
+    get:
+      summary: Get all subcategory
+      tags:
+        - Static
+        - Category
+      description: Retrieve a list of all subcategory
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /static/getSubcategoryByCatId/{categoryId}:
+    get:
+      summary: get Subcategory By CatId
+      tags:
+        - Static
+        - Category
+      parameters:
+        - in: path
+          name: categoryId
+          type: integer
+          required: true
+          description: The ID of the category to get subcategory for
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError" 
+  /static/getAllOccupationList:
+    get:
+      summary: Get all OccupationList
+      tags:
+        - Static
+      description: Retrieve a list of all OccupationList
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /static/getAllQualificationList:
+    get:
+      summary: Get all QualificationList
+      tags:
+        - Static
+      description: Retrieve a list of all QualificationList
+      responses:
+        "200":
+          description: Successful response
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+definitions:
+  Plan:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      name:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+        format: double
+    required:
+      - id
+      - name
+      - price
+  PlanCreate:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+        format: double
+    required:
+      - name
+      - price
+  PlanUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+        format: double
+    required:
+      - name
+      - price
+  Payout:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      amount:
+        type: number
+        format: double
+      date:
+        type: string
+        format: date
+      status:
+        type: string
+      affiliate_id:
+        type: integer
+        format: int32
+    required:
+      - id
+      - amount
+      - date
+      - status
+      - affiliate_id
+  PayoutCreate:
+    type: object
+    properties:
+      amount:
+        type: number
+        format: double
+      date:
+        type: string
+        format: date
+      status:
+        type: string
+      affiliate_id:
+        type: integer
+        format: int32
+    required:
+      - amount
+      - date
+      - status
+      - affiliate_id
+  PayoutUpdate:
+    type: object
+    properties:
+      amount:
+        type: number
+        format: double
+      date:
+        type: string
+        format: date
+      status:
+        type: string
+      affiliate_id:
+        type: integer
+        format: int32
+    required:
+      - amount
+      - date
+      - status
+      - affiliate_id
+  AffiliateMemberCreate:
+    type: object
+    properties:
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      Email:
+        type: string
+        format: email
+      Phone:
+        type: string
+      Address:
+        type: string
+      City:
+        type: string
+      State:
+        type: string
+      ZipCode:
+        type: string
+    required:
+      - FirstName
+      - LastName
+      - Email
+      - Phone
+      - Address
+      - City
+      - State
+      - ZipCode
+  AffiliateMemberUpdate:
+    type: object
+    properties:
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      Email:
+        type: string
+        format: email
+      Phone:
+        type: string
+      Address:
+        type: string
+      City:
+        type: string
+      State:
+        type: string
+      ZipCode:
+        type: string
+      IsActive:
+        type: integer
+        format: int32
+      IsDeleted:
+        type: integer
+        format: int32
+    required:
+      - FirstName
+      - LastName
+      - Email
+      - Phone
+      - Address
+      - City
+      - State
+      - ZipCode
+  AffiliateMember:
+    type: object
+    properties:
+      MemberID:
+        type: integer
+        format: int64
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      Email:
+        type: string
+        format: email
+      Phone:
+        type: string
+      Address:
+        type: string
+      City:
+        type: string
+      State:
+        type: string
+      ZipCode:
+        type: string
+      IsActive:
+        type: integer
+        format: int32
+      IsDeleted:
+        type: integer
+        format: int32
+    required:
+      - MemberID
+      - FirstName
+      - LastName
+      - Email
+      - Phone
+      - Address
+      - City
+      - State
+      - ZipCode
+      - IsActive
+      - IsDeleted
+  Course:
+    type: object
+    properties:
+      CourseID:
+        type: integer
+        format: int64
+      CourseTitle:
+        type: string
+      CourseDescription:
+        type: string
+      CourseImageURL:
+        type: string
+      CourseStartDate:
+        type: string
+        format: date
+      CourseEndDate:
+        type: string
+        format: date
+      IsActive:
+        type: integer
+        format: int32
+      IsDeleted:
+        type: integer
+        format: int32
+    required:
+      - CourseID
+      - CourseTitle
+      - IsActive
+      - IsDeleted
+  Module:
+    type: object
+    properties:
+      ModuleID:
+        type: integer
+        format: int64
+      CourseID:
+        type: integer
+        format: int64
+      ModuleTitle:
+        type: string
+      ModuleDescription:
+        type: string
+      ModuleStartDate:
+        type: string
+        format: date
+      ModuleEndDate:
+        type: string
+        format: date
+      IsActive:
+        type: integer
+        format: int32
+      IsDeleted:
+        type: integer
+        format: int32
+    required:
+      - ModuleID
+      - CourseID
+      - ModuleTitle
+      - IsActive
+      - IsDeleted
+  Portfolio:
+    type: object
+    properties:
+      id:
+        type: integer
+      user_id:
+        type: integer
+      title:
+        type: string
+      description:
+        type: string
+      category:
+        type: string
+      images:
+        type: array
+        items:
+          type: string
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  Post:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: The unique identifier for the post
+      title:
+        type: string
+        description: The title of the post
+      body:
+        type: string
+        description: The body of the post
+      user_id:
+        type: integer
+        description: The ID of the user who posted the post
+      category:
+        type: string
+        description: The category of the post
+      created_at:
+        type: string
+        format: date-time
+        description: The date and time when the post was created
+      updated_at:
+        type: string
+        format: date-time
+        description: The date and time when the post was last updated
+      images:
+        type: array
+        items:
+          type: string
+        description: An array of image URLs attached to the post
+    required:
+      - id
+      - title
+      - body
+      - user_id
+      - category
+      - created_at
+      - updated_at
+  Question:
+    type: object
+    properties:
+      id:
+        type: integer
+      user_id:
+        type: integer
+      title:
+        type: string
+      body:
+        type: string
+      favorite:
+        type: boolean
+      accepted_answer_id:
+        type: integer
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  Answer:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: The unique identifier for the answer
+      body:
+        type: string
+        description: The body of the answer
+      accepted:
+        type: boolean
+        description: >-
+          Indicates whether the answer has been accepted as the solution to the
+          question
+      created_at:
+        type: string
+        format: date-time
+        description: The date and time when the answer was created
+      updated_at:
+        type: string
+        format: date-time
+        description: The date and time when the answer was last updated
+      user_id:
+        type: integer
+        description: The ID of the user who posted the answer
+    required:
+      - id
+      - body
+      - created_at
+      - updated_at
+      - user_id
+  Person:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      category:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      website:
+        type: string
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  Project:
+    type: object
+    properties:
+      id:
+        type: integer
+      user_id:
+        type: integer
+      title:
+        type: string
+      description:
+        type: string
+      budget:
+        type: integer
+      favorite:
+        type: boolean
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  Profile:
+    type: object
+    properties:
+      id:
+        type: integer
+      user_id:
+        type: integer
+      name:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      website:
+        type: string
+      bio:
+        type: string
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  Order:
+    type: object
+    properties:
+      id:
+        type: integer
+      user_id:
+        type: integer
+      project_id:
+        type: integer
+      description:
+        type: string
+      budget:
+        type: integer
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  ProfileUpdate:
+    type: object
+    properties:
+      full_name:
+        type: string
+        description: The full name of the user
+      username:
+        type: string
+        description: The username of the user
+      email:
+        type: string
+        format: email
+        description: The email address of the user
+      password:
+        type: string
+        description: The new password for the user
+      bio:
+        type: string
+        description: A short bio of the user
+      location:
+        type: string
+        description: The location of the user
+      website:
+        type: string
+        format: uri
+        description: The website URL of the user
+      image:
+        type: string
+        format: uri
+        description: The profile image URL of the user
+    required:
+      - full_name
+      - username
+      - email
+  Message:
+    type: object
+    properties:
+      id:
+        type: integer
+      sender_id:
+        type: integer
+      receiver_id:
+        type: integer
+      body:
+        type: string
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  SearchQuery:
+    type: object
+    properties:
+      query:
+        type: string
+      filters:
+        type: object
+  MonthlyDistribution:
+    type: object
+    properties:
+      month:
+        type: string
+      count:
+        type: integer
+  NewPortfolio:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      startDate:
+        type: string
+      endDate:
+        type: string
+      budget:
+        type: number
+    required:
+      - name
+      - description
+      - startDate
+      - endDate
+      - budget
+securityDefinitions:
+  basicAuth:
+    type: basic
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+x-components:
+  parameters:
+    Gender:
+      in: query
+      name: gender
+      enum:
+        - Male
+        - Female
+      type: string
+      description: The gender to filter profiles by
+      x-example: Male
+    Page:
+      in: query
+      name: page
+      minimum: 1
+      default: 1
+      type: integer
+      description: The page number to retrieve
+      x-example: 1
+    PerPage:
+      in: query
+      name: per_page
+      minimum: 1
+      maximum: 50
+      default: 10
+      type: integer
+      description: The number of results to retrieve per page
+      x-example: 10
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      schema:
+        type: object
+        properties:
+          error:
+            type: string
+            example: Unauthorized
+    Forbidden:
+      description: Forbidden
+      schema:
+        type: object
+        properties:
+          error:
+            type: string
+            example: Forbidden
+    NotFound:
+      description: Not Found
+      schema:
+        type: object
+        properties:
+          error:
+            type: string
+            example: Not Found
+    InternalServerError:
+      description: Internal Server Error
+      schema:
+        type: object
+        properties:
+          error:
+            type: string
+            example: Internal Server Error
+    BadRequest:
+      description: Bad Request
+      schema:
+        type: object
+        properties:
+          error:
+            type: string
+            example: Bad Request
